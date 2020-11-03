@@ -25,7 +25,7 @@ class Query(object):
         if argv:
             self.sql = ["SELECT", list(argv), "FROM", self.models[0]]
         else:
-            self.sql = ["SELECT", ['*'], "FROM", self.models[0]]
+            self.sql = ["SELECT", ['* '], "FROM", self.models[0]]
 
         return self
 
@@ -75,7 +75,6 @@ class Query(object):
     def __construct_for_list(self, item):
         ls = []
         for i in item:
-            print(i, isinstance(i, Column))
             if isinstance(i, Column):
                 for model in self.models:
                     for name, field in inspect.getmembers(model):
