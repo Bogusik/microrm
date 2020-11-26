@@ -1,20 +1,29 @@
 
 class Column:
 
-    def __init__(self, type=None, primary=False, validators=[]):
+    def __init__(self, type=None, primary=False, validators=[], null=True):
         self.value = None
         self.validators = validators
         self.type = type
         self.primary = primary
+        self.null = null
 
     def _validate_val(self, val=None):
-        return all([v.validate(val) for v in self.validators])
+        if self.validators:
+            return all([v.validate(val) for v in self.validators])
+        else:
+            return True
 
     def validate(self, val=None):
+        if not val:
+            val = self.value
         if val:
             return self._validate_val(val)
         else:
-            return self._validate_val(self.value)
+            if self.null:
+                return True
+            else:
+                return False
 
     
     def __eq__(self, other):
@@ -103,14 +112,12 @@ class Expression:
         if isinstance(other, self.__class__):
             self.expr.extend([operator, *other.expr])
             return self
-        elif isinstance(other, str):
-            last_str = "'" + str(other) + "'"
         elif not other:
             last_str = "NULL"
         elif isinstance(other, Column):
             last_str = other
         else:
-            last_str = str(other)
+            last_str = "'" + str(other) + "'"
 
         self.expr.extend([self.obj, operator, last_str])
 

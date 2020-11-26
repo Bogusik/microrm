@@ -6,14 +6,22 @@ class Model:
 
     __table__ = ''
     __conn__ = None
+    id=None
 
     def __init__(self, record=None, **k):
+
+        for v in inspect.getmembers(self):
+            if v[1].__class__.__name__ == "Column":
+                v[1].value = None
 
         if record:
             self.set_record(record)
 
         for k,v in k.items():
-            getattr(self, k).value = v
+            try:
+                getattr(self, k).value = v
+            except AttributeError:
+                continue
 
     @classmethod
     def columns(cls):
@@ -33,14 +41,8 @@ class Model:
 
     @classmethod
     def query(cls):
-        return Query.set_model(cls) 
+        return Query().set_model(cls) 
 
-    def is_empty(self):
-        return len(self._data) == 0
-
-
-    def not_empty(self):
-        return not self.is_empty()
 
     @classmethod
     def conn(cls, conn):
@@ -50,7 +52,10 @@ class Model:
 
     def set_record(self, record):
         for k in record.keys():
-            getattr(self, k).value = record[k]
+            try:
+                getattr(self, k).value = record[k]
+            except AttributeError:
+                pass
         return self
 
     def __str__(self):
@@ -67,10 +72,10 @@ class Model:
         return Query().set_model(self.__class__).insert(**self.columns())
     
     def update(self):
-        return Query().set_model(self).update(**self.columns()).where(self.id==self.id.value)
+        return Query().set_model(self.__class__).update(**self.columns()).where(self.id==self.id.value)
 
     def delete(self):
-        return Query().set_model(self).delete().where(self.id==self.id.value)
+        return Query().set_model(self.__class__).delete().where(self.id==self.id.value)
     
     @classmethod
     def find(cls, expr=None):
@@ -78,8 +83,7 @@ class Model:
 
     @classmethod
     def join(cls, model, on=None, type='INNER'):
-        Query().set_model(cls).add_model(model).join(model, on, type)
-        return cls
+        return Query().set_model(cls).add_model(model).join(model, on, type)
     
     @classmethod
     def get(cls, id):

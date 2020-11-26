@@ -1,4 +1,4 @@
-import re, datetime
+import re
 import inspect
 import asyncpg
 from ..columns import Column, Expression
@@ -36,6 +36,8 @@ class Query(object):
 
     def set_model(self, model):
         self.__model__ = model
+        if model not in self.__models:
+            self.__models.append(model)
         return self
 
     def __getattr__(self, name):
@@ -44,7 +46,8 @@ class Query(object):
         return self
     
     def add_model(self, model):
-        self.__models.append(model)
+        if model not in self.__models:
+            self.__models.append(model)
         return self
 
     def select(self, *argv):
@@ -63,11 +66,7 @@ class Query(object):
         values = []
         for k, v in argv.items():
             if v.value and v.primary == False:
-                if isinstance(v.value, int):
-                    t = str(v.value)
-                else:
-                    t = f"'{v.value}'"
-                values.append(f"{k} = {t}")
+                values.append(f"{k} = '{v.value}'")
         if argv:
             self.sql = ["UPDATE", self.__model__.__table__, "SET", values] + self.sql
 
@@ -79,12 +78,8 @@ class Query(object):
         values = []
         for k, v in argv.items():
             if v.value and v.primary == False:
-                if isinstance(v.value, int):
-                    t = str(v.value)
-                else:
-                    t = f"'{v.value}'"
                 keys.append(k)
-                values.append(t)
+                values.append(f"'{v.value}'")
 
 
         self.sql = ["INSERT INTO", self.__model__.__table__, "(", ', '.join(keys), ") VALUES (", values, ")"] + self.sql
@@ -104,8 +99,7 @@ class Query(object):
 
     def where(self, expr):
         if expr:
-            if expr:
-                self.sql.extend(["WHERE", expr])
+            self.sql.extend(["WHERE", expr])
         return self
     
 
@@ -141,23 +135,66 @@ class Query(object):
             elif isinstance(item, Expression):
                 sql_ += ' '.join(_construct_for_list(item.expr, self.__model__, *self.__models))
             sql_ += ' '
+        print(sql_)
         return sql_[:-1]
 
 
     async def execute(self, conn):
-        print(self._construct_sql())
         await conn.execute(self._construct_sql())
         self.sql = []
     
-    async def fetch(self, conn):
+    async def fetch(self, conn, md=None):
+        if not md:
+            md = self.__model__()
+        else:
+            md = md()
+            for model in self.__models:
+                for c, v in model.columns().items():
+                    setattr(md, c, v)
         records = await conn.fetch(self._construct_sql())
 
         self.sql = []
-        return [self.__model__(record) for record in records]
-    
+        return ModelList(md, [record for record in records])
+
 
     async def fetchval(self, conn):
         value = await conn.fetchval(self._construct_sql())
 
         self.sql = []
         return value
+
+
+class ModelList:
+
+    def __init__(self, model, models=[]):
+        self.model = model
+        self.models = models[:]
+    
+    def first(self):
+        if self.models:
+            return self.model.set_record(self.models[0])
+        else:
+            return None
+    
+    def last(self):
+        if self.models:
+            return self.model.set_record(self.models[-1])
+        else:
+            return None
+
+    def __iter__(self):
+        return ModelListIterator(self)
+
+
+class ModelListIterator:
+
+    def __init__(self, model_list):
+        self.model_list = model_list
+        self.index = 0
+
+    def __next__(self):
+        if self.index < len(self.model_list.models) :
+            res = self.model_list.model.set_record(self.model_list.models[self.index])
+            self.index +=1
+            return res
+        raise StopIteration
