@@ -8,7 +8,7 @@ setup(
     author = 'Bohuslav Semenov',
     author_email = 'semenov0310@gmail.com',
     url = 'https://github.com/Bogusik/microrm',
-    download_url = 'https://github.com/Bogusik/microrm/archive/v_01.tar.gz',
+    download_url = 'https://github.com/Bogusik/microrm/archive/v_011.tar.gz',
     keywords = ['asyncpg', 'orm', 'async'],
     install_requires=[
             'asyncpg'
