@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
     name = 'mirorm',
     packages = ['microrm'],
-    version = '0.1.2',
+    version = '0.1.3',
     license='MIT',
     description = 'Small ORM library to use with asyncpg',
     author = 'Bohuslav Semenov',
     author_email = 'semenov0310@gmail.com',
     url = 'https://github.com/Bogusik/microrm',
-    download_url = 'https://github.com/Bogusik/microrm/archive/v_012.tar.gz',
+    download_url = 'https://github.com/Bogusik/microrm/archive/v_013.tar.gz',
     keywords = ['asyncpg', 'orm', 'async'],
     install_requires=[
             'asyncpg'
