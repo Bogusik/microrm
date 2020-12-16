@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(
-    name = 'mirorm',
+    name = 'microrm',
     packages = ['microrm'],
     version = '0.1.4',
     license='MIT',
