@@ -1,6 +1,6 @@
 import inspect
 import asyncpg
-from . import Query
+from .decalrative import Query
 
 class Model:
 
