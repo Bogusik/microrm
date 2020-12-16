@@ -1,6 +1,6 @@
 import inspect
 import asyncpg
-from .decalrative import Query
+from microrm.decalrative import Query
 
 class Model:
 
