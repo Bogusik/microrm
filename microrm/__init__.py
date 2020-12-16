@@ -1,3 +1,3 @@
-import declarative
-import model
-import validator
+import .declarative
+import .model
+import .validator
