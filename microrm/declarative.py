@@ -317,7 +317,7 @@ class Expression:
         elif isinstance(other, str):
             last_str = "'" + other + "'"
         else:
-            last_str = "'" + other + "'"
+            last_str = "'" + str(other) + "'"
 
         self.expr.extend([self.obj, operator, last_str])
 
