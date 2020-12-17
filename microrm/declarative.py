@@ -57,10 +57,10 @@ class Query(object):
             l = '*'
 
         self.sql = ["SELECT", l, "FROM", self.__model__.__table__] + self.sql
-        
+
         return self
-        
-    
+
+
     def update(self, **argv):
         values = []
         for k, v in argv.items():
@@ -71,7 +71,7 @@ class Query(object):
 
         return self
 
-    
+
     def insert(self, **argv):
         keys = []
         values = []
@@ -86,12 +86,12 @@ class Query(object):
         return self
 
 
-    def delete(self):      
+    def delete(self):
         self.sql = ["DELETE FROM", self.__model__.__table__] + self.sql
 
         return self
-    
-    def returning(self, *argv):      
+
+    def returning(self, *argv):
         self.sql.extend(["RETURNING", list(argv)])
 
         return self
@@ -100,7 +100,7 @@ class Query(object):
         if expr:
             self.sql.extend(["WHERE", expr])
         return self
-    
+
 
     def order_by(self, *k, asc=[]):
         if k:
@@ -141,7 +141,7 @@ class Query(object):
     async def execute(self, conn):
         await conn.execute(self._construct_sql())
         self.sql = []
-    
+
     async def fetch(self, conn, md=None):
         if not md:
             md = self.__model__()
@@ -168,13 +168,13 @@ class ModelList:
     def __init__(self, model, models=[]):
         self.model = model
         self.models = models[:]
-    
+
     def first(self):
         if self.models:
             return self.model.set_record(self.models[0])
         else:
             return None
-    
+
     def last(self):
         if self.models:
             return self.model.set_record(self.models[-1])
@@ -224,7 +224,6 @@ class Column:
             else:
                 return False
 
-    
     def __eq__(self, other):
         if other:
             return Expression(self, "=", other)

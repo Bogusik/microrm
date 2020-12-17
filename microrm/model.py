@@ -30,7 +30,7 @@ class Model:
             if v.__class__.__name__ == "Column":
                 t.append((i, v))
         return dict(t)
-    
+
     @classmethod
     def columns_vals(cls):
         t = []
@@ -70,13 +70,13 @@ class Model:
 
     def insert(self):
         return Query().set_model(self.__class__).insert(**self.columns())
-    
+
     def update(self):
         return Query().set_model(self.__class__).update(**self.columns()).where(self.id==self.id.value)
 
     def delete(self):
         return Query().set_model(self.__class__).delete().where(self.id==self.id.value)
-    
+
     @classmethod
     def find(cls, expr=None):
         return Query().set_model(cls).select().where(expr)
@@ -84,8 +84,7 @@ class Model:
     @classmethod
     def join(cls, model, on=None, type='INNER'):
         return Query().set_model(cls).add_model(model).join(model, on, type)
-    
+
     @classmethod
     def get(cls, id):
         return Query().set_model(cls).select().where(cls.id == id)
-    

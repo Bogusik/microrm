@@ -52,7 +52,7 @@ class UsernameValidator(ReValidator):
         self.r = r"(^[a-z0-9_.-]+$)"
 
 
-class NicknameValidator(ReValidator):
+class NameValidator(ReValidator):
 
     def __init__(self):
         self.r = r"(^[a-zA-Z0-9\s_.-]+$)"
