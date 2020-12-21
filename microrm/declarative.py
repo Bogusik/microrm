@@ -314,8 +314,8 @@ class Expression:
             last_str = "NULL"
         elif isinstance(other, Query):
             last_str = other
-        elif isinstance(other, str):
-            last_str = "'" + other + "'"
+        elif isinstance(other, Column):
+            last_str = other
         else:
             last_str = "'" + str(other) + "'"
 
